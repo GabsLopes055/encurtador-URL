@@ -5,11 +5,12 @@ import gabs.encurtador.URL.dto.UrlResponse;
 import gabs.encurtador.URL.entity.UrlEntity;
 import gabs.encurtador.URL.repository.UrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -38,7 +39,7 @@ public class EncurtarURL {
 
         boolean codigoCadastrado = repository.existsById(codigo);
 
-        if(codigoCadastrado) {
+        if (codigoCadastrado) {
             throw new RuntimeException("Código já existe cadastrado");
         }
     }
@@ -61,14 +62,18 @@ public class EncurtarURL {
 
         // Sorteando 8 valores aleatórios do array
         for (int i = 0; i < 8; i++) {
-
-            int indiceAleatorio = random.nextInt(alfabeto.length);
-
-            codigo.append(alfabeto[indiceAleatorio]);
+            codigo.append(alfabeto[random.nextInt(alfabeto.length)]);
         }
 
         return codigo.toString();
 
     }
 
+    public String redirectURL(String codeURL) {
+
+        Optional<UrlEntity> findURL = repository.findById(codeURL);
+
+        return findURL.get().getUrlCompleta();
+
+    }
 }
